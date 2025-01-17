@@ -37,14 +37,6 @@ public class Board {
         return height;
     }
 
-    public int getLength(){
-        return board.length;
-    }
-
-    public int getLength0(){
-        return board[0].length;
-    }
-
     private int determineBoardSize(int size) {
         if (size < 4) {
             throw new IllegalArgumentException("Size should be greater than 4");
@@ -66,7 +58,6 @@ public class Board {
         int[][] hor = getHorizontally(x, y, player);
         int[][] ver = getVertically(x, y, player);
         int[][] diag = getDiagonally(x, y, player);
-        resultSet.add(new int[]{x, y});
 
         Collections.addAll(resultSet, hor);
         Collections.addAll(resultSet, ver);
@@ -80,16 +71,25 @@ public class Board {
         PlayerStatus playerNum = PlayerStatus.getByValue(player);
 
         //влево
-        int currentY = y;
+        int currentY = y - 1;
         while (currentY >= 0 && board[x][currentY] == reversePlayer(playerNum).getValue()) {
             currentY--;
+        }
+        if (currentY >= 0 && board[x][currentY] == playerNum.getValue()) {
+            for (int i = currentY + 1; i < y; i++) {
+                indexes.add(new int[]{x, i});
+            }
         }
 
         //вправо
         currentY = y + 1;
         while (currentY < board[x].length && board[x][currentY] == reversePlayer(playerNum).getValue()) {
-            indexes.add(new int[]{x, currentY});
             currentY++;
+        }
+        if (currentY < board[x].length && board[x][currentY] == playerNum.getValue()) {
+            for (int i = y + 1; i < currentY; i++) {
+                indexes.add(new int[]{x, i});
+            }
         }
 
         return indexes.toArray(new int[0][]);
@@ -100,16 +100,25 @@ public class Board {
         PlayerStatus playerNum = PlayerStatus.getByValue(player);
 
         //вверх
-        int currentX = x;
+        int currentX = x - 1;
         while (currentX >= 0 && board[currentX][y] == reversePlayer(playerNum).getValue()) {
             currentX--;
+        }
+        if (currentX >= 0 && board[currentX][y] == playerNum.getValue()) {
+            for (int i = currentX + 1; i < x; i++) {
+                indexes.add(new int[]{i, y});
+            }
         }
 
         //вниз
         currentX = x + 1;
         while (currentX < board.length && board[currentX][y] == reversePlayer(playerNum).getValue()) {
-            indexes.add(new int[]{currentX, y});
             currentX++;
+        }
+        if (currentX < board.length && board[currentX][y] == playerNum.getValue()) {
+            for (int i = x + 1; i < currentX; i++) {
+                indexes.add(new int[]{i, y});
+            }
         }
 
         return indexes.toArray(new int[0][]);
@@ -124,30 +133,52 @@ public class Board {
 
         //вправо вниз
         while (currentX < board.length && currentY < board[currentX].length && board[currentX][currentY] == reversePlayer(playerNum).getValue()) {
-            indexes.add(new int[]{currentX, currentY});
             currentX++;
             currentY++;
+        }
+        if (currentX < board.length && currentY < board[currentX].length && board[currentX][currentY] == playerNum.getValue()) {
+            for (int i = x + 1, j = y + 1; i < currentX && j < currentY; i++, j++) {
+                indexes.add(new int[]{i, j});
+            }
         }
 
         //вправо вверх
+        currentX = x - 1;
+        currentY = y + 1;
         while (currentX >= 0 && currentY < board[currentX].length && board[currentX][currentY] == reversePlayer(playerNum).getValue()) {
-            indexes.add(new int[]{currentX, currentY});
             currentX--;
             currentY++;
         }
+        if (currentX >= 0 && currentY < board[currentX].length && board[currentX][currentY] == playerNum.getValue()) {
+            for (int i = x - 1, j = y + 1; i > currentX && j < currentY; i--, j++) {
+                indexes.add(new int[]{i, j});
+            }
+        }
 
         //влево вверх
+        currentX = x - 1;
+        currentY = y - 1;
         while (currentX >= 0 && currentY >= 0 && board[currentX][currentY] == reversePlayer(playerNum).getValue()) {
-            indexes.add(new int[]{currentX, currentY});
             currentX--;
             currentY--;
         }
+        if (currentX >= 0 && currentY >= 0 && board[currentX][currentY] == playerNum.getValue()) {
+            for (int i = x - 1, j = y - 1; i > currentX && j > currentY; i--, j--) {
+                indexes.add(new int[]{i, j});
+            }
+        }
 
         //влево вниз
+        currentX = x + 1;
+        currentY = y - 1;
         while (currentX < board.length && currentY >= 0 && board[currentX][currentY] == reversePlayer(playerNum).getValue()) {
-            indexes.add(new int[]{currentX, currentY});
             currentX++;
             currentY--;
+        }
+        if (currentX < board.length && currentY >= 0 && board[currentX][currentY] == playerNum.getValue()) {
+            for (int i = x + 1, j = y - 1; i < currentX && j > currentY; i++, j--) {
+                indexes.add(new int[]{i, j});
+            }
         }
 
         return indexes.toArray(new int[0][]);

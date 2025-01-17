@@ -26,6 +26,14 @@ public class GameLogic {
         return endGame;
     }
 
+    public int getPointsPlayer1() {
+        return pointsPlayer1;
+    }
+
+    public int getPointsPlayer2() {
+        return pointsPlayer2;
+    }
+
     public void initialConditions() {
         board.setBoardPosition(width / 2 - 1, height / 2 - 1, PlayerStatus.PLAYER2);
         board.setBoardPosition(width / 2 - 1, height / 2, PlayerStatus.PLAYER1);
@@ -34,76 +42,63 @@ public class GameLogic {
     }
 
     public void makeMove(int x, int y) {
-        int[][] allPosition = board.allChecks(x, y, player.getValue());
+        if (board.getPosition(x, y) != 0) {
+            throw new IllegalArgumentException("Position already occupied.");
+        }
 
-        if (allPosition.length != 0 && board.getPosition(x, y) == 0) {
-            board.setBoardPosition(x, y, player);
-
-            for (int[] position : allPosition) {
-                int targetX = position[0];
-                int targetY = position[1];
-
-                if (x < targetX && y < targetY) {
-                    for (int i = x; i <= targetX; i++) {
-                        for (int j = y; j <= targetY; j++) {
-                            board.setBoardPosition(i, j, player);
-                        }
-                    }
-                } else if (x < targetX && y > targetY) {
-                    for (int i = x; i <= targetX; i++) {
-                        for (int j = y; j >= targetY; j--) {
-                            board.setBoardPosition(i, j, player);
-                        }
-                    }
-                } else if (x > targetX && y < targetY) {
-                    for (int i = x; i >= targetX; i--) {
-                        for (int j = y; j <= targetY; j++) {
-                            board.setBoardPosition(i, j, player);
-                        }
-                    }
-                } else {
-                    for (int i = x; i >= targetX; i--) {
-                        for (int j = y; j >= targetY; j--) {
-                            board.setBoardPosition(i, j, player);
-                        }
-                    }
-                }
-            }
-            isGameOver(x, y);
-            reversePlayer();
-        } else {
+        int[][] allPositions = board.allChecks(x, y, player.getValue());
+        if (allPositions.length == 0) {
             throw new IllegalArgumentException("Invalid position");
+        }
+
+        board.setBoardPosition(x, y, player);
+        flipStones(x, y, allPositions);
+        updatePoints();
+        isGameOver(x, y);
+        reversePlayer();
+    }
+
+    private void flipStones(int x, int y, int[][] allPositions) {
+        for (int[] position : allPositions) {
+            int targetX = position[0];
+            int targetY = position[1];
+            int dx = Integer.compare(targetX, x);
+            int dy = Integer.compare(targetY, y);
+            int currX = x + dx;
+            int currY = y + dy;
+            while (currX != targetX || currY != targetY) {
+                board.setBoardPosition(currX, currY, player);
+                currX += dx;
+                currY += dy;
+            }
         }
     }
 
-    public PlayerStatus getPlayer() {
-        return player;
+    private void updatePoints() {
+        pointsPlayer1 = 0;
+        pointsPlayer2 = 0;
+
+        for (int i = 0; i < board.getWidth(); i++) {
+            for (int j = 0; j < board.getHeight(); j++) {
+                if (board.getPosition(i, j) == PlayerStatus.PLAYER1.getValue()) {
+                    pointsPlayer1++;
+                } else if (board.getPosition(i, j) == PlayerStatus.PLAYER2.getValue()) {
+                    pointsPlayer2++;
+                }
+            }
+        }
     }
 
     public void reversePlayer() {
-        if (player == PlayerStatus.PLAYER2) {
-            player = PlayerStatus.PLAYER1;
-        } else if (player == PlayerStatus.PLAYER1) {
-            player = PlayerStatus.PLAYER2;
-        }
+        player = (player == PlayerStatus.PLAYER1) ? PlayerStatus.PLAYER2 : PlayerStatus.PLAYER1;
     }
 
     public void isGameOver(int x, int y) {
-        if (pointsPlayer2 + pointsPlayer1 == board.getSize() ||
+        if (pointsPlayer1 + pointsPlayer2 == board.getSize() ||
                 pointsPlayer1 == 0 || pointsPlayer2 == 0 ||
                 board.allChecks(x, y, PlayerStatus.PLAYER1.getValue()).length == 0 &&
                         board.allChecks(x, y, PlayerStatus.PLAYER2.getValue()).length == 0) {
-            checkWinner();
             endGame = true;
         }
-    }
-
-    public String checkWinner() {
-        if (pointsPlayer1 > pointsPlayer2) {
-            return "Win player 1";
-        } else if (pointsPlayer1 < pointsPlayer2) {
-            return "Win player 2";
-        }
-        return "Drawn game";
     }
 }

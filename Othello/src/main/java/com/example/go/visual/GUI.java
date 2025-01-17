@@ -13,7 +13,7 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-public class GUI extends Application {//рисуем интерфейс
+public class GUI extends Application {
     private ArrayList<Pebbles> pebbles;
     private GameLogic gl = new GameLogic();
     private double height;
@@ -64,11 +64,12 @@ public class GUI extends Application {//рисуем интерфейс
             gameBoard.start(primaryStage);
         });
 
-        if (gl.isEndGame()){
+        if (gl.isEndGame()) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Конец игры");
             alert.setHeaderText(null);
-            alert.setContentText("Выиграли чёрные!");
+            String winnerMessage = getWinnerMessage();
+            alert.setContentText(winnerMessage);
 
             ButtonType playAgainButton = new ButtonType("Сыграть ещё");
             ButtonType exitButton = new ButtonType("Выйти");
@@ -76,13 +77,14 @@ public class GUI extends Application {//рисуем интерфейс
             alert.getButtonTypes().setAll(playAgainButton, exitButton);
             alert.showAndWait().ifPresent(response -> {
                 if (response == playAgainButton) {
-                    // Логика для начала новой игры
+                    gl.start();
+                    primaryStage.close();
+                    start(primaryStage);
                 } else if (response == exitButton) {
-                    // Логика для выхода из игры
                     System.exit(0);
                 }
             });
-        };
+        }
 
         VBox layout = new VBox(30);
         layout.setStyle("-fx-background-color: #CD853F;");
@@ -93,6 +95,19 @@ public class GUI extends Application {//рисуем интерфейс
         primaryStage.setScene(scene);
         primaryStage.setTitle("Othello offline");
         primaryStage.show();
+    }
+
+    private String getWinnerMessage() {
+        int pointsPlayer1 = gl.getPointsPlayer1();
+        int pointsPlayer2 = gl.getPointsPlayer2();
+
+        if (pointsPlayer1 > pointsPlayer2) {
+            return "Чёрные фишки победили! Счёт: Чёрные - " + pointsPlayer1 + ", Белые - " + pointsPlayer2;
+        } else if (pointsPlayer1 < pointsPlayer2) {
+            return "Белые фишки победили! Счёт: Чёрные - " + pointsPlayer1 + ", Белые - " + pointsPlayer2;
+        } else {
+            return "Ничья! Счёт: Чёрные - " + pointsPlayer1 + ", Белые - " + pointsPlayer2;
+        }
     }
 
     public static void main(String[] args) {
