@@ -10,6 +10,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 public class GameBoard {//рисуем доску
@@ -53,11 +54,11 @@ public class GameBoard {//рисуем доску
 
         boardGroup.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             //gikb yf[eq 'nb ldt cnhjrb rjlf zyt pyf.? xnj c ybvb cltkfnm
-            int x = (int) (event.getX() / cellSize);
-            int y = (int) (event.getY() / cellSize);
-            System.out.println("Координаты клика: (" + x + ", " + y + ")");
+            int x = (int) Math.floor(event.getX() / cellSize);
+            int y = (int) Math.floor(event.getY() / cellSize);
             try {
                 gl.makeMove(x, y);
+                updateBoardView(boardGroup);
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
             }
@@ -68,6 +69,24 @@ public class GameBoard {//рисуем доску
 
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    private void updateBoardView(Group boardGroup) {
+        boardGroup.getChildren().clear();
+
+        for (int i = 0; i < board.getLength(); i++) {
+            for (int j = 0; j < board.getLength(); j++) {
+                Color color = switch (board.getPosition(i, j)) {
+                    case 1 -> Color.BLACK;
+                    case 2 -> Color.WHITE;
+                    default -> Color.TRANSPARENT;
+                };
+                Pebbles cell = new Pebbles(i, j, cellSize, color);
+                cell.placePebbleOnBoard(boardGroup);
+            }
+        }
+
+        drawBoard(boardGroup);
     }
 
     private void drawBoard(Group boardGroup) {

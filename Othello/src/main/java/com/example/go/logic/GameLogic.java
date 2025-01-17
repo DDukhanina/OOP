@@ -26,7 +26,7 @@ public class GameLogic {
         return endGame;
     }
 
-    public void initialConditions(){
+    public void initialConditions() {
         board.setBoardPosition(width / 2 - 1, height / 2 - 1, PlayerStatus.PLAYER2);
         board.setBoardPosition(width / 2 - 1, height / 2, PlayerStatus.PLAYER1);
         board.setBoardPosition(width / 2, height / 2 - 1, PlayerStatus.PLAYER1);
@@ -36,7 +36,7 @@ public class GameLogic {
     public void makeMove(int x, int y) {
         int[][] allPosition = board.allChecks(x, y, player.getValue());
 
-        if (allPosition.length != 0) {
+        if (allPosition.length != 0 && board.getPosition(x, y) == 0) {
             board.setBoardPosition(x, y, player);
 
             for (int[] position : allPosition) {

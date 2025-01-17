@@ -19,6 +19,10 @@ public class Board {
         height = 8;
     }
 
+    public int getPosition(int i, int j) {
+        return board[i][j];
+    }
+
     public int getSize() {
         return width * height;
     }
@@ -31,6 +35,14 @@ public class Board {
     public int getHeight() {
         height = determineBoardSize(height);
         return height;
+    }
+
+    public int getLength(){
+        return board.length;
+    }
+
+    public int getLength0(){
+        return board[0].length;
     }
 
     private int determineBoardSize(int size) {
