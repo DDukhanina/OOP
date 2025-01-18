@@ -6,7 +6,11 @@ import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -14,7 +18,6 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class GUI extends Application {
-    private ArrayList<Pebbles> pebbles;
     private GameLogic gl = new GameLogic();
     private double height;
     private double width;
@@ -64,28 +67,6 @@ public class GUI extends Application {
             gameBoard.start(primaryStage);
         });
 
-        if (gl.isEndGame()) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Конец игры");
-            alert.setHeaderText(null);
-            String winnerMessage = getWinnerMessage();
-            alert.setContentText(winnerMessage);
-
-            ButtonType playAgainButton = new ButtonType("Сыграть ещё");
-            ButtonType exitButton = new ButtonType("Выйти");
-
-            alert.getButtonTypes().setAll(playAgainButton, exitButton);
-            alert.showAndWait().ifPresent(response -> {
-                if (response == playAgainButton) {
-                    gl.start();
-                    primaryStage.close();
-                    start(primaryStage);
-                } else if (response == exitButton) {
-                    System.exit(0);
-                }
-            });
-        }
-
         VBox layout = new VBox(30);
         layout.setStyle("-fx-background-color: #CD853F;");
         layout.setAlignment(Pos.CENTER);
@@ -95,6 +76,27 @@ public class GUI extends Application {
         primaryStage.setScene(scene);
         primaryStage.setTitle("Othello offline");
         primaryStage.show();
+    }
+
+    public void onGameEnd() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Конец игры");
+        alert.setHeaderText(null);
+        String winnerMessage = getWinnerMessage();
+        alert.setContentText(winnerMessage);
+
+        ButtonType playAgainButton = new ButtonType("Сыграть ещё");
+        ButtonType exitButton = new ButtonType("Выйти");
+
+        alert.getButtonTypes().setAll(playAgainButton, exitButton);
+        alert.showAndWait().ifPresent(response -> {
+            if (response == playAgainButton) {
+                gl.start();
+                start(new Stage());
+            } else if (response == exitButton) {
+                System.exit(0);
+            }
+        });
     }
 
     private String getWinnerMessage() {

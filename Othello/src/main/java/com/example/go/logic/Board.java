@@ -53,6 +53,15 @@ public class Board {
         board[x][y] = player.getValue();
     }
 
+    private PlayerStatus reversePlayer(PlayerStatus player) {
+        if (player == PlayerStatus.PLAYER1) {
+            return PlayerStatus.PLAYER2;
+        } else if (player == PlayerStatus.PLAYER2) {
+            return PlayerStatus.PLAYER1;
+        }
+        return PlayerStatus.FREE;
+    }
+
     public int[][] allChecks(int x, int y, int player) {
         Set<int[]> resultSet = new HashSet<>();
         int[][] hor = getHorizontally(x, y, player);
@@ -128,10 +137,9 @@ public class Board {
         List<int[]> indexes = new ArrayList<>();
         PlayerStatus playerNum = PlayerStatus.getByValue(player);
 
-        int currentX = x;
-        int currentY = y;
-
-        //вправо вниз
+        // Вправо вниз
+        int currentX = x + 1;
+        int currentY = y + 1;
         while (currentX < board.length && currentY < board[currentX].length && board[currentX][currentY] == reversePlayer(playerNum).getValue()) {
             currentX++;
             currentY++;
@@ -142,7 +150,7 @@ public class Board {
             }
         }
 
-        //вправо вверх
+        // Вправо вверх
         currentX = x - 1;
         currentY = y + 1;
         while (currentX >= 0 && currentY < board[currentX].length && board[currentX][currentY] == reversePlayer(playerNum).getValue()) {
@@ -155,7 +163,7 @@ public class Board {
             }
         }
 
-        //влево вверх
+        // Влево вверх
         currentX = x - 1;
         currentY = y - 1;
         while (currentX >= 0 && currentY >= 0 && board[currentX][currentY] == reversePlayer(playerNum).getValue()) {
@@ -168,7 +176,7 @@ public class Board {
             }
         }
 
-        //влево вниз
+        // Влево вниз
         currentX = x + 1;
         currentY = y - 1;
         while (currentX < board.length && currentY >= 0 && board[currentX][currentY] == reversePlayer(playerNum).getValue()) {
@@ -182,14 +190,5 @@ public class Board {
         }
 
         return indexes.toArray(new int[0][]);
-    }
-
-    private PlayerStatus reversePlayer(PlayerStatus player) {
-        if (player == PlayerStatus.PLAYER1) {
-            return PlayerStatus.PLAYER2;
-        } else if (player == PlayerStatus.PLAYER2) {
-            return PlayerStatus.PLAYER1;
-        }
-        return PlayerStatus.FREE;
     }
 }

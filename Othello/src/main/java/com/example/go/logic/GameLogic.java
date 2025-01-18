@@ -66,7 +66,7 @@ public class GameLogic {
             int dy = Integer.compare(targetY, y);
             int currX = x + dx;
             int currY = y + dy;
-            while (currX != targetX || currY != targetY) {
+            while (currX != targetX+dx || currY != targetY+dy) {
                 board.setBoardPosition(currX, currY, player);
                 currX += dx;
                 currY += dy;

@@ -55,7 +55,7 @@ public class GameBoard {
                     System.out.println(e.getMessage());
                 }
             } else {
-                System.out.println("Click out of bounds, try again.");
+                System.out.println("Try again.");
             }
         });
 
